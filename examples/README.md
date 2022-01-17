@@ -1,3 +1,4 @@
-# Terraform <TODO> examples
+# Terraform AWS Batch Examples
 
-- [Complete](./complete)
+- [EC2](https://github.com/clowdhaus/terraform-aws-batch/tree/main/examples/ec2)
+- [Fargate](https://github.com/clowdhaus/terraform-aws-batch/tree/main/examples/fargate)

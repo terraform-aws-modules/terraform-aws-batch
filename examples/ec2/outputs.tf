@@ -4,7 +4,7 @@
 
 output "compute_environments" {
   description = "Map of compute environments created and their associated attributes"
-  value       = aws_batch_compute_environment.this
+  value       = module.batch.compute_environments
 }
 
 ################################################################################
@@ -13,32 +13,32 @@ output "compute_environments" {
 
 output "instance_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.instance[0].name, "")
+  value       = module.batch.instance_iam_role_name
 }
 
 output "instance_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.instance[0].arn, "")
+  value       = module.batch.instance_iam_role_arn
 }
 
 output "instance_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.instance[0].unique_id, "")
+  value       = module.batch.instance_iam_role_unique_id
 }
 
 output "instance_iam_instance_profile_arn" {
   description = "ARN assigned by AWS to the instance profile"
-  value       = try(aws_iam_instance_profile.instance[0].arn, "")
+  value       = module.batch.instance_iam_instance_profile_arn
 }
 
 output "instance_iam_instance_profile_id" {
   description = "Instance profile's ID"
-  value       = try(aws_iam_instance_profile.instance[0].id, "")
+  value       = module.batch.instance_iam_instance_profile_id
 }
 
 output "instance_iam_instance_profile_unique" {
   description = "Stable and unique string identifying the IAM instance profile"
-  value       = try(aws_iam_instance_profile.instance[0].unique_id, "")
+  value       = module.batch.instance_iam_instance_profile_unique
 }
 
 ################################################################################
@@ -47,17 +47,17 @@ output "instance_iam_instance_profile_unique" {
 
 output "service_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.service[0].name, "")
+  value       = module.batch.service_iam_role_name
 }
 
 output "service_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.service[0].arn, "")
+  value       = module.batch.service_iam_role_arn
 }
 
 output "service_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.service[0].unique_id, "")
+  value       = module.batch.service_iam_role_unique_id
 }
 
 ################################################################################
@@ -66,17 +66,17 @@ output "service_iam_role_unique_id" {
 
 output "spot_fleet_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].name, "")
+  value       = module.batch.spot_fleet_iam_role_name
 }
 
 output "spot_fleet_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].arn, "")
+  value       = module.batch.spot_fleet_iam_role_arn
 }
 
 output "spot_fleet_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].unique_id, "")
+  value       = module.batch.spot_fleet_iam_role_unique_id
 }
 
 ################################################################################
@@ -85,7 +85,7 @@ output "spot_fleet_iam_role_unique_id" {
 
 output "job_queues" {
   description = "Map of job queues created and their associated attributes"
-  value       = aws_batch_job_queue.this
+  value       = module.batch.job_queues
 }
 
 ################################################################################
@@ -94,7 +94,7 @@ output "job_queues" {
 
 output "scheduling_policies" {
   description = "Map of scheduling policies created and their associated attributes"
-  value       = aws_batch_scheduling_policy.this
+  value       = module.batch.scheduling_policies
 }
 
 ################################################################################
@@ -103,5 +103,5 @@ output "scheduling_policies" {
 
 output "job_definitions" {
   description = "Map of job defintions created and their associated attributes"
-  value       = aws_batch_job_definition.this
+  value       = module.batch.job_definitions
 }
