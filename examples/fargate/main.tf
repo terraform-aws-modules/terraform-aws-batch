@@ -9,127 +9,11 @@ locals {
   tags = {
     Name       = local.name
     Example    = local.name
-    Repository = "https://github.com/clowdhaus/terraform-aws-batch"
+    Repository = "https://github.com/terraform-aws-modules/terraform-aws-batch"
   }
 }
 
 data "aws_region" "current" {}
-
-################################################################################
-# Supporting Resources
-################################################################################
-
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
-
-  name = local.name
-  cidr = "10.99.0.0/18"
-
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
-  private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
-
-  enable_nat_gateway      = true
-  single_nat_gateway      = true
-  map_public_ip_on_launch = false
-
-  public_route_table_tags  = { Name = "${local.name}-public" }
-  public_subnet_tags       = { Name = "${local.name}-public" }
-  private_route_table_tags = { Name = "${local.name}-private" }
-  private_subnet_tags      = { Name = "${local.name}-private" }
-
-  manage_default_security_group  = true
-  default_security_group_name    = "${local.name}-default"
-  default_security_group_ingress = []
-  default_security_group_egress  = []
-
-  enable_dhcp_options      = true
-  enable_dns_hostnames     = true
-  dhcp_options_domain_name = data.aws_region.current.name == "us-east-1" ? "ec2.internal" : "${data.aws_region.current.name}.compute.internal"
-
-  tags = local.tags
-}
-
-module "vpc_endpoints" {
-  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 3.0"
-
-  vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
-
-  endpoints = {
-    ecr_api = {
-      service             = "ecr.api"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-    }
-    ecr_dkr = {
-      service             = "ecr.dkr"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-    }
-    s3 = {
-      service         = "s3"
-      service_type    = "Gateway"
-      route_table_ids = module.vpc.private_route_table_ids
-    }
-  }
-
-  tags = local.tags
-}
-
-module "vpc_endpoint_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
-
-  name        = "${local.name}-vpc-endpoint"
-  description = "Security group for VPC endpoints"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_with_self = [
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      description = "Container to VPC endpoint service"
-      self        = true
-    },
-  ]
-
-  egress_cidr_blocks = ["0.0.0.0/0"]
-  egress_rules       = ["https-443-tcp"]
-
-  tags = local.tags
-}
-
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${local.name}-ecs-task-exec"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
-}
-
-data "aws_iam_policy_document" "ecs_task_execution_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/batch/${local.name}"
-  retention_in_days = 1
-
-  tags = local.tags
-}
 
 ################################################################################
 # Batch Module
@@ -279,6 +163,122 @@ module "batch" {
       }
     }
   }
+
+  tags = local.tags
+}
+
+################################################################################
+# Supporting Resources
+################################################################################
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 3.0"
+
+  name = local.name
+  cidr = "10.99.0.0/18"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
+  private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
+
+  enable_nat_gateway      = true
+  single_nat_gateway      = true
+  map_public_ip_on_launch = false
+
+  public_route_table_tags  = { Name = "${local.name}-public" }
+  public_subnet_tags       = { Name = "${local.name}-public" }
+  private_route_table_tags = { Name = "${local.name}-private" }
+  private_subnet_tags      = { Name = "${local.name}-private" }
+
+  manage_default_security_group  = true
+  default_security_group_name    = "${local.name}-default"
+  default_security_group_ingress = []
+  default_security_group_egress  = []
+
+  enable_dhcp_options      = true
+  enable_dns_hostnames     = true
+  dhcp_options_domain_name = data.aws_region.current.name == "us-east-1" ? "ec2.internal" : "${data.aws_region.current.name}.compute.internal"
+
+  tags = local.tags
+}
+
+module "vpc_endpoints" {
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "~> 3.0"
+
+  vpc_id             = module.vpc.vpc_id
+  security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
+
+  endpoints = {
+    ecr_api = {
+      service             = "ecr.api"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+    }
+    ecr_dkr = {
+      service             = "ecr.dkr"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+    }
+    s3 = {
+      service         = "s3"
+      service_type    = "Gateway"
+      route_table_ids = module.vpc.private_route_table_ids
+    }
+  }
+
+  tags = local.tags
+}
+
+module "vpc_endpoint_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "${local.name}-vpc-endpoint"
+  description = "Security group for VPC endpoints"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_with_self = [
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "Container to VPC endpoint service"
+      self        = true
+    },
+  ]
+
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["https-443-tcp"]
+
+  tags = local.tags
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name               = "${local.name}-ecs-task-exec"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+}
+
+data "aws_iam_policy_document" "ecs_task_execution_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_cloudwatch_log_group" "this" {
+  name              = "/aws/batch/${local.name}"
+  retention_in_days = 1
 
   tags = local.tags
 }
