@@ -226,7 +226,7 @@ resource "aws_batch_job_queue" "this" {
   scheduling_policy_arn = try(each.value.scheduling_policy_arn, aws_batch_scheduling_policy.this[each.key].arn)
   compute_environments  = [for env in aws_batch_compute_environment.this : env.arn]
 
-  tags = merge(var.tags, lookup(each.value, "tags"))
+  tags = merge(var.tags, lookup(each.value, "tags", {}))
 }
 
 ################################################################################
@@ -251,7 +251,7 @@ resource "aws_batch_scheduling_policy" "this" {
     }
   }
 
-  tags = merge(var.tags, lookup(each.value, "tags"))
+  tags = merge(var.tags, lookup(each.value, "tags", {}))
 }
 
 ################################################################################
