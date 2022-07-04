@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.1.1...v1.1.2) (2022-07-04)
+
+
+### Bug Fixes
+
+* Add default for tag lookup in job queue resources. ([#2](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/2)) ([edb1b75](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/edb1b751913f612aa9e93891976ff677a3fee4fc))
+
 ### [1.1.1](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.1.0...v1.1.1) (2022-04-21)
 
 
