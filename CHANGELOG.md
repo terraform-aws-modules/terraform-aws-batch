@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.1.2...v1.2.0) (2022-07-19)
+
+
+### Features
+
+* Add create_scheduling_policy option to job_queue ([#3](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/3)) ([86546af](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/86546af08a5791149693374e9206fb5166914b37))
+
 ### [1.1.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.1.1...v1.1.2) (2022-07-04)
 
 
