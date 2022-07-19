@@ -223,7 +223,7 @@ resource "aws_batch_job_queue" "this" {
   name                  = each.value.name
   state                 = each.value.state
   priority              = each.value.priority
-  scheduling_policy_arn = try(each.value.scheduling_policy_arn, aws_batch_scheduling_policy.this[each.key].arn)
+  scheduling_policy_arn = try(each.value.create_scheduling_policy, true) ? aws_batch_scheduling_policy.this[each.key].arn : try(each.value.scheduling_policy_arn, null)
   compute_environments  = [for env in aws_batch_compute_environment.this : env.arn]
 
   tags = merge(var.tags, lookup(each.value, "tags", {}))
@@ -234,7 +234,7 @@ resource "aws_batch_job_queue" "this" {
 ################################################################################
 
 resource "aws_batch_scheduling_policy" "this" {
-  for_each = { for k, v in var.job_queues : k => v if var.create && var.create_job_queues }
+  for_each = { for k, v in var.job_queues : k => v if var.create && var.create_job_queues && try(v.create_scheduling_policy, true) }
 
   name = each.value.name
 
