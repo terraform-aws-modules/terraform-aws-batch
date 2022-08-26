@@ -129,8 +129,8 @@ module "batch" {
           platformVersion = "LATEST"
         },
         resourceRequirements = [
-          { type = "VCPU", value = 1 },
-          { type = "MEMORY", value = 1024 }
+          { type = "VCPU", value = "1" },
+          { type = "MEMORY", value = "2048" }
         ],
         executionRoleArn = aws_iam_role.ecs_task_execution_role.arn
         logConfiguration = {
