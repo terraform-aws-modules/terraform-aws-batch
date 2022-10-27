@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.2.1](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.0...v1.2.1) (2022-10-27)
+
+
+### Bug Fixes
+
+* Update CI configuration files to use latest version ([#8](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/8)) ([5d739d0](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/5d739d077ad5940b140cd071f7948f0c0b5d9623))
+
 ## [1.2.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.1.2...v1.2.0) (2022-07-19)
 
 
