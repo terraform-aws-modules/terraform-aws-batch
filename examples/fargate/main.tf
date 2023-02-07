@@ -114,6 +114,17 @@ module "batch" {
         JobQueue = "High priority job queue"
       }
     }
+
+    no_scheduling_policy_priority = {
+	create_scheduling_policy = false
+        name     = "noOptioinalSchedulingPolicyPriorityFargate"
+        state    = "ENABLED"
+        priority = 1
+
+        tags = {
+          JobQueue = "No optional scheduling priority job queue"
+        }
+    }
   }
 
   job_definitions = {
