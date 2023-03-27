@@ -93,6 +93,8 @@ module "batch" {
         }]
       }
 
+      compute_environments = ["b_ec2_spot"]
+      
       tags = {
         JobQueue = "High priority job queue"
       }
