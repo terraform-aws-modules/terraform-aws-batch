@@ -144,6 +144,8 @@ module "batch" {
       state    = "ENABLED"
       priority = 1
 
+      compute_environments = ["b_ec2_spot"]
+
       tags = {
         JobQueue = "Low priority job queue"
       }

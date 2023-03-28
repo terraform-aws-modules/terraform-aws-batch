@@ -70,6 +70,8 @@ module "batch" {
       state    = "ENABLED"
       priority = 1
 
+      compute_environments = ["b_ec2_spot"]
+
       tags = {
         JobQueue = "Low priority job queue"
       }
@@ -92,8 +94,6 @@ module "batch" {
           weight_factor    = 0.2
         }]
       }
-
-      compute_environments = ["b_ec2_spot"]
       
       tags = {
         JobQueue = "High priority job queue"
