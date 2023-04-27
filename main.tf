@@ -57,6 +57,10 @@ resource "aws_batch_compute_environment" "this" {
   # too soon and the compute environment will then get stuck in the `DELETING` state
   depends_on = [aws_iam_role_policy_attachment.service]
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = merge(var.tags, lookup(each.value, "tags", {}))
 }
 
