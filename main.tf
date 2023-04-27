@@ -56,7 +56,7 @@ resource "aws_batch_compute_environment" "this" {
   # Prevent a race condition during environment deletion, otherwise the policy may be destroyed
   # too soon and the compute environment will then get stuck in the `DELETING` state
   depends_on = [aws_iam_role_policy_attachment.service]
-    
+
   lifecycle {
     create_before_destroy = true
   }
