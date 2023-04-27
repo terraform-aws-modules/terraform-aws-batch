@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.2.3](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.2...v1.2.3) (2023-04-27)
+
+
+### Bug Fixes
+
+* Add `create_before_destroy` lifecycle hook to `aws_batch_compute_environment` ([#18](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/18)) ([614fc14](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/614fc14f1be07a21a5de7a8dc0f477bf001a3519))
+
 ### [1.2.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.1...v1.2.2) (2023-01-24)
 
 
