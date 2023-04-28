@@ -210,8 +210,8 @@ module "vpc" {
   public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
   private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
 
-  enable_nat_gateway      = true
-  single_nat_gateway      = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   public_route_table_tags  = { Name = "${local.name}-public" }
   public_subnet_tags       = { Name = "${local.name}-public" }
@@ -285,16 +285,6 @@ module "vpc_endpoint_security_group" {
   egress_rules       = ["https-443-tcp"]
 
   tags = local.tags
-}
-
-data "aws_ami" "ubuntu" {
-  owners      = ["099720109477"]
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-20.04-amd64-server-*"]
-  }
 }
 
 resource "aws_cloudwatch_log_group" "this" {
