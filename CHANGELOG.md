@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.3...v2.0.0) (2023-04-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* Bump Terraform version to 1.0, and allow specifying compute environments for queue (#19)
+
+### Features
+
+* Bump Terraform version to 1.0, and allow specifying compute environments for queue ([#19](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/19)) ([8cec4e7](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/8cec4e7ed047bc20e317b007abf67f4027532dc1))
+
 ### [1.2.3](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.2...v1.2.3) (2023-04-27)
 
 
