@@ -108,32 +108,6 @@ module "batch" {
     c_unmanaged = {
       name_prefix = "ec2_unmanaged"
       type        = "UNMANAGED"
-
-      compute_resources = {
-        type                = "EC2"
-        allocation_strategy = "BEST_FIT_PROGRESSIVE"
-
-        min_vcpus      = 4
-        max_vcpus      = 16
-        desired_vcpus  = 4
-        instance_types = ["m4.large", "m3.large", "r4.large", "r3.large"]
-
-        security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
-        subnets            = module.vpc.private_subnets
-
-        ec2_configuration = {
-          image_id_override = data.aws_ami.ubuntu.image_id
-        }
-
-        # Note - any tag changes here will force compute environment replacement
-        # which can lead to job queue conflicts. Only specify tags that will be static
-        # for the lifetime of the compute environment
-        tags = {
-          # This will set the name on the Ec2 instances launched by this compute environment
-          Name = "${local.name}-unmanaged"
-          Type = "Ec2UnManaged"
-        }
-      }
     }
   }
 
@@ -143,6 +117,8 @@ module "batch" {
       name     = "LowPriorityEc2"
       state    = "ENABLED"
       priority = 1
+
+      compute_environments = ["b_ec2_spot"]
 
       tags = {
         JobQueue = "Low priority job queue"
@@ -225,7 +201,7 @@ module "batch" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = local.name
   cidr = "10.99.0.0/18"
@@ -234,19 +210,13 @@ module "vpc" {
   public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
   private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
 
-  enable_nat_gateway      = true
-  single_nat_gateway      = true
-  map_public_ip_on_launch = false
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   public_route_table_tags  = { Name = "${local.name}-public" }
   public_subnet_tags       = { Name = "${local.name}-public" }
   private_route_table_tags = { Name = "${local.name}-private" }
   private_subnet_tags      = { Name = "${local.name}-private" }
-
-  manage_default_security_group  = true
-  default_security_group_name    = "${local.name}-default"
-  default_security_group_ingress = []
-  default_security_group_egress  = []
 
   enable_dhcp_options      = true
   enable_dns_hostnames     = true
@@ -257,7 +227,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
@@ -315,16 +285,6 @@ module "vpc_endpoint_security_group" {
   egress_rules       = ["https-443-tcp"]
 
   tags = local.tags
-}
-
-data "aws_ami" "ubuntu" {
-  owners      = ["099720109477"]
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-20.04-amd64-server-*"]
-  }
 }
 
 resource "aws_cloudwatch_log_group" "this" {

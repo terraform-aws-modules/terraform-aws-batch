@@ -173,7 +173,7 @@ module "batch" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = local.name
   cidr = "10.99.0.0/18"
@@ -182,19 +182,13 @@ module "vpc" {
   public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
   private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
 
-  enable_nat_gateway      = true
-  single_nat_gateway      = true
-  map_public_ip_on_launch = false
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   public_route_table_tags  = { Name = "${local.name}-public" }
   public_subnet_tags       = { Name = "${local.name}-public" }
   private_route_table_tags = { Name = "${local.name}-private" }
   private_subnet_tags      = { Name = "${local.name}-private" }
-
-  manage_default_security_group  = true
-  default_security_group_name    = "${local.name}-default"
-  default_security_group_ingress = []
-  default_security_group_egress  = []
 
   enable_dhcp_options      = true
   enable_dns_hostnames     = true
@@ -205,7 +199,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
