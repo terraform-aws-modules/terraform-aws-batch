@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.0.1](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.0...v2.0.1) (2023-05-03)
+
+
+### Bug Fixes
+
+* Change `instance_iam_role_use_name_prefix` to use correct data type ([#20](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/20)) ([08a13f1](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/08a13f1a2d7722fb89daf16f25398c4be205f3a9))
+
 ## [2.0.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v1.2.3...v2.0.0) (2023-04-28)
 
 
