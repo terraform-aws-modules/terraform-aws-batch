@@ -26,15 +26,7 @@ module "batch_disabled" {
 }
 
 module "batch" {
-  source = "../.."
-
-  instance_iam_role_name        = "${local.name}-ecs-instance"
-  instance_iam_role_path        = "/batch/"
-  instance_iam_role_description = "IAM instance role/profile for AWS Batch ECS instance(s)"
-  instance_iam_role_tags = {
-    ModuleCreatedRole = "Yes"
-  }
-
+  source                       = "../.."
   service_iam_role_name        = "${local.name}-batch"
   service_iam_role_path        = "/batch/"
   service_iam_role_description = "IAM service role for AWS Batch"
@@ -83,20 +75,20 @@ module "batch" {
   # Job queus and scheduling policies
   job_queues = {
     low_priority = {
-      name     = "LowPriorityFargate"
-      state    = "ENABLED"
-      priority = 1
-
+      name                 = "LowPriorityFargate"
+      state                = "ENABLED"
+      priority             = 1
+      compute_environments = ["b_fargate"]
       tags = {
         JobQueue = "Low priority job queue"
       }
     }
 
     high_priority = {
-      name     = "HighPriorityFargate"
-      state    = "ENABLED"
-      priority = 99
-
+      name                 = "HighPriorityFargate"
+      state                = "ENABLED"
+      priority             = 99
+      compute_environments = ["a_fargate"]
       fair_share_policy = {
         compute_reservation = 1
         share_decay_seconds = 3600
@@ -133,6 +125,7 @@ module "batch" {
           { type = "MEMORY", value = "2048" }
         ],
         executionRoleArn = aws_iam_role.ecs_task_execution_role.arn
+        jobRoleArn       = aws_iam_role.job_role.arn
         logConfiguration = {
           logDriver = "awslogs"
           options = {
@@ -251,6 +244,11 @@ module "vpc_endpoint_security_group" {
 
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${local.name}-ecs-task-exec"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+}
+
+resource "aws_iam_role" "job_role" {
+  name               = "${local.name}-job-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
 }
 
