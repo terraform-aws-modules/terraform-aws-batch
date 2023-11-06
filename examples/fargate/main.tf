@@ -34,14 +34,6 @@ module "batch" {
     ModuleCreatedRole = "Yes"
   }
 
-  create_spot_fleet_iam_role      = true
-  spot_fleet_iam_role_name        = "${local.name}-spot"
-  spot_fleet_iam_role_path        = "/batch/"
-  spot_fleet_iam_role_description = "IAM spot fleet role for AWS Batch"
-  spot_fleet_iam_role_tags = {
-    ModuleCreatedRole = "Yes"
-  }
-
   compute_environments = {
     a_fargate = {
       name_prefix = "fargate"
@@ -75,20 +67,18 @@ module "batch" {
   # Job queus and scheduling policies
   job_queues = {
     low_priority = {
-      name                 = "LowPriorityFargate"
-      state                = "ENABLED"
-      priority             = 1
-      compute_environments = ["b_fargate"]
+      name     = "LowPriorityFargate"
+      state    = "ENABLED"
+      priority = 1
       tags = {
         JobQueue = "Low priority job queue"
       }
     }
 
     high_priority = {
-      name                 = "HighPriorityFargate"
-      state                = "ENABLED"
-      priority             = 99
-      compute_environments = ["a_fargate"]
+      name     = "HighPriorityFargate"
+      state    = "ENABLED"
+      priority = 99
       fair_share_policy = {
         compute_reservation = 1
         share_decay_seconds = 3600
