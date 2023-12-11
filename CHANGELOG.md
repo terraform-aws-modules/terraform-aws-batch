@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.0.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.1...v2.0.2) (2023-12-11)
+
+
+### Bug Fixes
+
+* Rename launch template parameters ([#25](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/25)) ([3e370d0](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/3e370d06bf4a7303a2bde56c0344b2e092fb6b0e))
+
 ### [2.0.1](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.0...v2.0.1) (2023-05-03)
 
 
