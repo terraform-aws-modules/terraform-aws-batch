@@ -94,7 +94,7 @@ module "batch" {
           weight_factor    = 0.2
         }]
       }
-      
+
       tags = {
         JobQueue = "High priority job queue"
       }
