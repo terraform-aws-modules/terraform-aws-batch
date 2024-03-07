@@ -287,8 +287,11 @@ resource "aws_batch_job_definition" "this" {
     }
   }
 
-  timeout {
-    attempt_duration_seconds = lookup(each.value, "attempt_duration_seconds", null)
+  dynamic "timeout" {
+    for_each = lookup(each.value, "attempt_duration_seconds", null) != null ? [each.value.attempt_duration_seconds] : []
+    content {
+      attempt_duration_seconds = timeout.value
+    }
   }
 
   propagate_tags = lookup(each.value, "propagate_tags", null)
