@@ -31,9 +31,9 @@ module "batch" {
   instance_iam_role_name        = "${local.name}-ecs-instance"
   instance_iam_role_path        = "/batch/"
   instance_iam_role_description = "IAM instance role/profile for AWS Batch ECS instance(s)"
-  instance_iam_role_additional_policies = [
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  ]
+  instance_iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
   instance_iam_role_tags = {
     ModuleCreatedRole = "Yes"
   }

@@ -101,10 +101,29 @@ resource "aws_iam_role" "instance" {
   tags = merge(var.tags, var.instance_iam_role_tags)
 }
 
+locals {
+  instance_role_policy_map = merge(
+    {
+      AmazonEC2ContainerServiceforEC2Role = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+    },
+    var.instance_iam_role_additional_policies
+  )
+  service_role_policy_map = merge(
+    {
+      AWSBatchServiceRole = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSBatchServiceRole"
+    },
+    var.service_iam_role_additional_policies
+  )
+  spot_fleet_policy_map = merge(
+    {
+      AmazonEC2SpotFleetTaggingRole = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+    },
+    var.spot_fleet_iam_role_additional_policies
+  )
+}
+
 resource "aws_iam_role_policy_attachment" "instance" {
-  for_each = var.create && var.create_instance_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-  ], var.instance_iam_role_additional_policies)))) : toset([])
+  for_each = var.create && var.create_instance_iam_role ? local.instance_role_policy_map : {}
 
   policy_arn = each.value
   role       = aws_iam_role.instance[0].name
@@ -163,9 +182,7 @@ resource "aws_iam_role" "service" {
 }
 
 resource "aws_iam_role_policy_attachment" "service" {
-  for_each = var.create && var.create_service_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSBatchServiceRole"
-  ], var.service_iam_role_additional_policies)))) : toset([])
+  for_each = var.create && var.create_service_iam_role ? local.service_role_policy_map : {}
 
   policy_arn = each.value
   role       = aws_iam_role.service[0].name
@@ -209,9 +226,7 @@ resource "aws_iam_role" "spot_fleet" {
 }
 
 resource "aws_iam_role_policy_attachment" "spot_fleet" {
-  for_each = var.create && var.create_spot_fleet_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
-  ], var.spot_fleet_iam_role_additional_policies)))) : toset([])
+  for_each = var.create && var.create_spot_fleet_iam_role ? local.spot_fleet_policy_map : {}
 
   policy_arn = each.value
   role       = aws_iam_role.spot_fleet[0].name
