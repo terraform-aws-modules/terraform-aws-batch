@@ -53,6 +53,14 @@ resource "aws_batch_compute_environment" "this" {
     }
   }
 
+  dynamic "eks_configuration" {
+    for_each = lookup(each.value, "eks_configuration", null) != null ? [each.value.eks_configuration] : []
+    content {
+      eks_cluster_arn = eks_configuration.value.eks_cluster_arn
+      kubernetes_namespace = eks_configuration.value.kubernetes_namespace
+    }
+  }
+
   # Prevent a race condition during environment deletion, otherwise the policy may be destroyed
   # too soon and the compute environment will then get stuck in the `DELETING` state
   depends_on = [aws_iam_role_policy_attachment.service]
