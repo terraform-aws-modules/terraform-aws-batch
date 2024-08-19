@@ -54,7 +54,8 @@ resource "aws_batch_compute_environment" "this" {
   }
 
   dynamic "eks_configuration" {
-    for_each = lookup(each.value, "eks_configuration", null) != null ? [each.value.eks_configuration] : []
+    for_each = try([each.value.eks_configuration], [])
+
     content {
       eks_cluster_arn      = eks_configuration.value.eks_cluster_arn
       kubernetes_namespace = eks_configuration.value.kubernetes_namespace
