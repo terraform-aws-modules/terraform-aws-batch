@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.3...v2.1.0) (2024-08-19)
+
+
+### Features
+
+* Add support for `eks_configuration` ([#32](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/32)) ([b6aa7e1](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/b6aa7e107d1da94afb6453f787bc4d8898b2063e))
+
 ## [2.0.3](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.2...v2.0.3) (2024-03-07)
 
 
