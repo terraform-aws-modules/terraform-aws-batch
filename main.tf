@@ -62,6 +62,15 @@ resource "aws_batch_compute_environment" "this" {
     }
   }
 
+  dynamic "update_policy" {
+    for_each = try([each.value.update_policy], [])
+
+    content {
+      job_execution_timeout_minutes = update_policy.value.job_execution_timeout_minutes
+      terminate_jobs_on_update      = update_policy.value.terminate_jobs_on_update
+    }
+  }
+
   # Prevent a race condition during environment deletion, otherwise the policy may be destroyed
   # too soon and the compute environment will then get stuck in the `DELETING` state
   depends_on = [aws_iam_role_policy_attachment.service]
