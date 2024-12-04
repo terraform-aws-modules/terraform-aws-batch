@@ -1,4 +1,11 @@
-data "aws_partition" "current" {}
+data "aws_partition" "current" {
+  count = var.create ? 1 : 0
+}
+
+locals {
+  partition  = try(data.aws_partition.current[0].partition, "")
+  dns_suffix = try(data.aws_partition.current[0].dns_suffix, "")
+}
 
 ################################################################################
 # Compute Environment(s)
@@ -70,15 +77,23 @@ resource "aws_batch_compute_environment" "this" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, lookup(each.value, "tags", {}))
+  tags = merge(
+    { terraform-aws-modules = "batch" },
+    var.tags,
+    try(each.value.tags, {})
+  )
 }
 
 ################################################################################
 # Compute Environment - Instance Role
 ################################################################################
 
+locals {
+  create_instance_iam_role = var.create && var.create_instance_iam_role
+}
+
 data "aws_iam_policy_document" "instance" {
-  count = var.create && var.create_instance_iam_role ? 1 : 0
+  count = local.create_instance_iam_role ? 1 : 0
 
   statement {
     sid     = "ECSAssumeRole"
@@ -86,13 +101,13 @@ data "aws_iam_policy_document" "instance" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
+      identifiers = ["ec2.${local.dns_suffix}"]
     }
   }
 }
 
 resource "aws_iam_role" "instance" {
-  count = var.create && var.create_instance_iam_role ? 1 : 0
+  count = local.create_instance_iam_role ? 1 : 0
 
   name        = var.instance_iam_role_use_name_prefix ? null : var.instance_iam_role_name
   name_prefix = var.instance_iam_role_use_name_prefix ? "${var.instance_iam_role_name}-" : null
@@ -107,20 +122,25 @@ resource "aws_iam_role" "instance" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, var.instance_iam_role_tags)
+  tags = merge(
+    var.tags,
+    var.instance_iam_role_tags,
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "instance" {
-  for_each = var.create && var.create_instance_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-  ], var.instance_iam_role_additional_policies)))) : toset([])
+  for_each = { for k, v in merge(
+    {
+      AmazonEC2ContainerServiceforEC2Role = "arn:${local.partition}:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+    },
+  var.instance_iam_role_additional_policies) : k => v if local.create_instance_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.instance[0].name
 }
 
 resource "aws_iam_instance_profile" "instance" {
-  count = var.create && var.create_instance_iam_role ? 1 : 0
+  count = local.create_instance_iam_role ? 1 : 0
 
   name        = var.instance_iam_role_use_name_prefix ? null : var.instance_iam_role_name
   name_prefix = var.instance_iam_role_use_name_prefix ? "${var.instance_iam_role_name}-" : null
@@ -131,15 +151,22 @@ resource "aws_iam_instance_profile" "instance" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, var.instance_iam_role_tags)
+  tags = merge(
+    var.tags,
+    var.instance_iam_role_tags,
+  )
 }
 
 ################################################################################
 # Compute Environment - Service Role
 ################################################################################
 
+locals {
+  create_service_iam_role = var.create && var.create_service_iam_role
+}
+
 data "aws_iam_policy_document" "service" {
-  count = var.create && var.create_service_iam_role ? 1 : 0
+  count = local.create_service_iam_role ? 1 : 0
 
   statement {
     sid     = "ECSAssumeRole"
@@ -147,13 +174,13 @@ data "aws_iam_policy_document" "service" {
 
     principals {
       type        = "Service"
-      identifiers = ["batch.${data.aws_partition.current.dns_suffix}"]
+      identifiers = ["batch.${local.dns_suffix}"]
     }
   }
 }
 
 resource "aws_iam_role" "service" {
-  count = var.create && var.create_service_iam_role ? 1 : 0
+  count = local.create_service_iam_role ? 1 : 0
 
   name        = var.service_iam_role_use_name_prefix ? null : var.service_iam_role_name
   name_prefix = var.service_iam_role_use_name_prefix ? "${var.service_iam_role_name}-" : null
@@ -168,13 +195,18 @@ resource "aws_iam_role" "service" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, var.service_iam_role_tags)
+  tags = merge(
+    var.tags,
+    var.service_iam_role_tags,
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "service" {
-  for_each = var.create && var.create_service_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSBatchServiceRole"
-  ], var.service_iam_role_additional_policies)))) : toset([])
+  for_each = { for k, v in merge(
+    {
+      AWSBatchServiceRole = "arn:${local.partition}:iam::aws:policy/service-role/AWSBatchServiceRole"
+    },
+  var.service_iam_role_additional_policies) : k => v if local.create_service_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.service[0].name
@@ -184,8 +216,12 @@ resource "aws_iam_role_policy_attachment" "service" {
 # Compute Environment - Spot Fleet Role
 ################################################################################
 
+locals {
+  create_spot_fleet_iam_role = var.create && var.create_spot_fleet_iam_role
+}
+
 data "aws_iam_policy_document" "spot_fleet" {
-  count = var.create && var.create_spot_fleet_iam_role ? 1 : 0
+  count = local.create_spot_fleet_iam_role ? 1 : 0
 
   statement {
     sid     = "ECSAssumeRole"
@@ -193,13 +229,13 @@ data "aws_iam_policy_document" "spot_fleet" {
 
     principals {
       type        = "Service"
-      identifiers = ["spotfleet.${data.aws_partition.current.dns_suffix}"]
+      identifiers = ["spotfleet.${local.dns_suffix}"]
     }
   }
 }
 
 resource "aws_iam_role" "spot_fleet" {
-  count = var.create && var.create_spot_fleet_iam_role ? 1 : 0
+  count = local.create_spot_fleet_iam_role ? 1 : 0
 
   name        = var.spot_fleet_iam_role_use_name_prefix ? null : var.spot_fleet_iam_role_name
   name_prefix = var.spot_fleet_iam_role_use_name_prefix ? "${var.spot_fleet_iam_role_name}-" : null
@@ -214,13 +250,18 @@ resource "aws_iam_role" "spot_fleet" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, var.spot_fleet_iam_role_tags)
+  tags = merge(
+    var.tags,
+    var.spot_fleet_iam_role_tags,
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "spot_fleet" {
-  for_each = var.create && var.create_spot_fleet_iam_role ? toset(compact(distinct(concat([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
-  ], var.spot_fleet_iam_role_additional_policies)))) : toset([])
+  for_each = { for k, v in merge(
+    {
+      AmazonEC2SpotFleetTaggingRole = "arn:${local.partition}:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+    },
+  var.spot_fleet_iam_role_additional_policies) : k => v if local.create_spot_fleet_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.spot_fleet[0].name
@@ -230,8 +271,12 @@ resource "aws_iam_role_policy_attachment" "spot_fleet" {
 # Job Queue
 ################################################################################
 
+locals {
+  create_job_queues = var.create && var.create_job_queues
+}
+
 resource "aws_batch_job_queue" "this" {
-  for_each = { for k, v in var.job_queues : k => v if var.create && var.create_job_queues }
+  for_each = { for k, v in var.job_queues : k => v if local.create_job_queues }
 
   name                  = each.value.name
   state                 = each.value.state
@@ -239,7 +284,10 @@ resource "aws_batch_job_queue" "this" {
   scheduling_policy_arn = try(each.value.create_scheduling_policy, true) ? aws_batch_scheduling_policy.this[each.key].arn : try(each.value.scheduling_policy_arn, null)
   compute_environments  = slice([for env in try(each.value.compute_environments, keys(var.compute_environments)) : aws_batch_compute_environment.this[env].arn], 0, min(length(try(each.value.compute_environments, keys(var.compute_environments))), 3))
 
-  tags = merge(var.tags, lookup(each.value, "tags", {}))
+  tags = merge(
+    var.tags,
+    try(each.value.tags, {}),
+  )
 }
 
 ################################################################################
@@ -247,7 +295,7 @@ resource "aws_batch_job_queue" "this" {
 ################################################################################
 
 resource "aws_batch_scheduling_policy" "this" {
-  for_each = { for k, v in var.job_queues : k => v if var.create && var.create_job_queues && try(v.create_scheduling_policy, true) }
+  for_each = { for k, v in var.job_queues : k => v if local.create_job_queues && try(v.create_scheduling_policy, true) }
 
   name = each.value.name
 
@@ -257,14 +305,18 @@ resource "aws_batch_scheduling_policy" "this" {
 
     dynamic "share_distribution" {
       for_each = { for k, v in try(each.value.fair_share_policy.share_distribution, {}) : k => v if can(each.value.fair_share_policy.share_distribution) }
+
       content {
         share_identifier = share_distribution.value.share_identifier
-        weight_factor    = lookup(share_distribution.value, "weight_factor", null)
+        weight_factor    = try(share_distribution.value.weight_factor, null)
       }
     }
   }
 
-  tags = merge(var.tags, lookup(each.value, "tags", {}))
+  tags = merge(
+    var.tags,
+    try(each.value.tags, {}),
+  )
 }
 
 ################################################################################
@@ -274,32 +326,38 @@ resource "aws_batch_scheduling_policy" "this" {
 resource "aws_batch_job_definition" "this" {
   for_each = { for k, v in var.job_definitions : k => v if var.create && var.create_job_definitions }
 
-  name                  = lookup(each.value, "name", each.key)
-  container_properties  = lookup(each.value, "container_properties", null)
-  parameters            = lookup(each.value, "parameters", {})
-  platform_capabilities = lookup(each.value, "platform_capabilities", null)
-  type                  = lookup(each.value, "type", "container")
+  name                  = try(each.value.name, each.key)
+  container_properties  = try(each.value.container_properties, null)
+  parameters            = try(each.value.parameters, {})
+  platform_capabilities = try(each.value.platform_capabilities, null)
+  type                  = try(each.value.type, "container")
 
   dynamic "retry_strategy" {
-    for_each = lookup(each.value, "retry_strategy", null) != null ? [each.value.retry_strategy] : []
+    for_each = try([each.value.retry_strategy], [])
+
     content {
-      attempts = lookup(retry_strategy.value, "attempts", null)
+      attempts = try(retry_strategy.value.attempts, null)
+
       dynamic "evaluate_on_exit" {
-        for_each = try(retry_strategy.value.evaluate_on_exit, {})
+        for_each = try(retry_strategy.value.evaluate_on_exit, [])
+
         content {
           action           = evaluate_on_exit.value.action
-          on_exit_code     = lookup(evaluate_on_exit.value, "on_exit_code", null)
-          on_reason        = lookup(evaluate_on_exit.value, "on_reason", null)
-          on_status_reason = lookup(evaluate_on_exit.value, "on_status_reason", null)
+          on_exit_code     = try(evaluate_on_exit.value.on_exit_code, null)
+          on_reason        = try(evaluate_on_exit.value.on_reason, null)
+          on_status_reason = try(evaluate_on_exit.value.on_status_reason, null)
         }
       }
     }
   }
 
   timeout {
-    attempt_duration_seconds = lookup(each.value, "attempt_duration_seconds", null)
+    attempt_duration_seconds = try(each.value.attempt_duration_seconds, null)
   }
 
-  propagate_tags = lookup(each.value, "propagate_tags", null)
-  tags           = merge(var.tags, lookup(each.value, "tags", {}))
+  propagate_tags = try(each.value.propagate_tags, null)
+
+  tags = merge(
+    var.tags, try(each.value.tags, {}),
+  )
 }

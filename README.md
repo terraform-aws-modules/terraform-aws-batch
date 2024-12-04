@@ -163,14 +163,14 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.78 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.78 |
 
 ## Modules
 
@@ -207,7 +207,7 @@ No modules.
 | <a name="input_create_job_queues"></a> [create\_job\_queues](#input\_create\_job\_queues) | Determines whether to create job queues | `bool` | `true` | no |
 | <a name="input_create_service_iam_role"></a> [create\_service\_iam\_role](#input\_create\_service\_iam\_role) | Determines whether a an IAM role is created or to use an existing IAM role | `bool` | `true` | no |
 | <a name="input_create_spot_fleet_iam_role"></a> [create\_spot\_fleet\_iam\_role](#input\_create\_spot\_fleet\_iam\_role) | Determines whether a an IAM role is created or to use an existing IAM role | `bool` | `false` | no |
-| <a name="input_instance_iam_role_additional_policies"></a> [instance\_iam\_role\_additional\_policies](#input\_instance\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `list(string)` | `[]` | no |
+| <a name="input_instance_iam_role_additional_policies"></a> [instance\_iam\_role\_additional\_policies](#input\_instance\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
 | <a name="input_instance_iam_role_description"></a> [instance\_iam\_role\_description](#input\_instance\_iam\_role\_description) | Cluster instance IAM role description | `string` | `null` | no |
 | <a name="input_instance_iam_role_name"></a> [instance\_iam\_role\_name](#input\_instance\_iam\_role\_name) | Cluster instance IAM role name | `string` | `null` | no |
 | <a name="input_instance_iam_role_path"></a> [instance\_iam\_role\_path](#input\_instance\_iam\_role\_path) | Cluster instance IAM role path | `string` | `null` | no |
@@ -216,14 +216,14 @@ No modules.
 | <a name="input_instance_iam_role_use_name_prefix"></a> [instance\_iam\_role\_use\_name\_prefix](#input\_instance\_iam\_role\_use\_name\_prefix) | Determines whether the IAM role name (`instance_iam_role_name`) is used as a prefix | `string` | `true` | no |
 | <a name="input_job_definitions"></a> [job\_definitions](#input\_job\_definitions) | Map of job definitions to create | `any` | `{}` | no |
 | <a name="input_job_queues"></a> [job\_queues](#input\_job\_queues) | Map of job queue and scheduling policy defintions to create | `any` | `{}` | no |
-| <a name="input_service_iam_role_additional_policies"></a> [service\_iam\_role\_additional\_policies](#input\_service\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `list(string)` | `[]` | no |
+| <a name="input_service_iam_role_additional_policies"></a> [service\_iam\_role\_additional\_policies](#input\_service\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
 | <a name="input_service_iam_role_description"></a> [service\_iam\_role\_description](#input\_service\_iam\_role\_description) | Batch service IAM role description | `string` | `null` | no |
 | <a name="input_service_iam_role_name"></a> [service\_iam\_role\_name](#input\_service\_iam\_role\_name) | Batch service IAM role name | `string` | `null` | no |
 | <a name="input_service_iam_role_path"></a> [service\_iam\_role\_path](#input\_service\_iam\_role\_path) | Batch service IAM role path | `string` | `null` | no |
 | <a name="input_service_iam_role_permissions_boundary"></a> [service\_iam\_role\_permissions\_boundary](#input\_service\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_service_iam_role_tags"></a> [service\_iam\_role\_tags](#input\_service\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |
 | <a name="input_service_iam_role_use_name_prefix"></a> [service\_iam\_role\_use\_name\_prefix](#input\_service\_iam\_role\_use\_name\_prefix) | Determines whether the IAM role name (`service_iam_role_name`) is used as a prefix | `bool` | `true` | no |
-| <a name="input_spot_fleet_iam_role_additional_policies"></a> [spot\_fleet\_iam\_role\_additional\_policies](#input\_spot\_fleet\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `list(string)` | `[]` | no |
+| <a name="input_spot_fleet_iam_role_additional_policies"></a> [spot\_fleet\_iam\_role\_additional\_policies](#input\_spot\_fleet\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
 | <a name="input_spot_fleet_iam_role_description"></a> [spot\_fleet\_iam\_role\_description](#input\_spot\_fleet\_iam\_role\_description) | Spot fleet IAM role description | `string` | `null` | no |
 | <a name="input_spot_fleet_iam_role_name"></a> [spot\_fleet\_iam\_role\_name](#input\_spot\_fleet\_iam\_role\_name) | Spot fleet IAM role name | `string` | `null` | no |
 | <a name="input_spot_fleet_iam_role_path"></a> [spot\_fleet\_iam\_role\_path](#input\_spot\_fleet\_iam\_role\_path) | Spot fleet IAM role path | `string` | `null` | no |

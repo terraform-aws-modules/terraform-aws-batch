@@ -2,9 +2,14 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_availability_zones" "available" {}
+
 locals {
   region = "us-east-1"
-  name   = "batch-ex-${replace(basename(path.cwd), "_", "-")}"
+  name   = "batch-ex-${basename(path.cwd)}"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Name       = local.name
@@ -12,8 +17,6 @@ locals {
     Repository = "https://github.com/terraform-aws-modules/terraform-aws-batch"
   }
 }
-
-data "aws_region" "current" {}
 
 ################################################################################
 # Batch Module
@@ -58,7 +61,7 @@ module "batch" {
         type      = "FARGATE"
         max_vcpus = 4
 
-        security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
+        security_group_ids = [module.vpc_endpoints.security_group_id]
         subnets            = module.vpc.private_subnets
 
         # `tags = {}` here is not applicable for spot
@@ -72,7 +75,7 @@ module "batch" {
         type      = "FARGATE_SPOT"
         max_vcpus = 4
 
-        security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
+        security_group_ids = [module.vpc_endpoints.security_group_id]
         subnets            = module.vpc.private_subnets
 
         # `tags = {}` here is not applicable for spot
@@ -173,78 +176,60 @@ module "batch" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name = local.name
-  cidr = "10.99.0.0/18"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
-  private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
 
   enable_nat_gateway = true
   single_nat_gateway = true
-
-  public_route_table_tags  = { Name = "${local.name}-public" }
-  public_subnet_tags       = { Name = "${local.name}-public" }
-  private_route_table_tags = { Name = "${local.name}-private" }
-  private_subnet_tags      = { Name = "${local.name}-private" }
-
-  enable_dhcp_options      = true
-  enable_dns_hostnames     = true
-  dhcp_options_domain_name = data.aws_region.current.name == "us-east-1" ? "ec2.internal" : "${data.aws_region.current.name}.compute.internal"
 
   tags = local.tags
 }
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
-  vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.vpc_endpoint_security_group.security_group_id]
+  vpc_id = module.vpc.vpc_id
 
-  endpoints = {
-    ecr_api = {
-      service             = "ecr.api"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-    }
-    ecr_dkr = {
-      service             = "ecr.dkr"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-    }
-    s3 = {
-      service         = "s3"
-      service_type    = "Gateway"
-      route_table_ids = module.vpc.private_route_table_ids
+  # Security group
+  create_security_group      = true
+  security_group_name_prefix = "${local.name}-vpc-endpoints-"
+  security_group_description = "VPC endpoint security group"
+  security_group_rules = {
+    ingress_https = {
+      description = "HTTPS from VPC"
+      cidr_blocks = [module.vpc.vpc_cidr_block]
     }
   }
 
-  tags = local.tags
-}
-
-module "vpc_endpoint_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
-
-  name        = "${local.name}-vpc-endpoint"
-  description = "Security group for VPC endpoints"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_with_self = [
+  endpoints = merge(
     {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      description = "Container to VPC endpoint service"
-      self        = true
+      s3 = {
+        service         = "s3"
+        service_type    = "Gateway"
+        route_table_ids = module.vpc.private_route_table_ids
+        tags = {
+          Name = "${local.name}-s3"
+        }
+      }
     },
-  ]
-
-  egress_cidr_blocks = ["0.0.0.0/0"]
-  egress_rules       = ["https-443-tcp"]
+    {
+      for service in toset(["ecr.api", "ecr.dkr", "ecs"]) :
+      replace(service, ".", "_") =>
+      {
+        service             = service
+        subnet_ids          = module.vpc.private_subnets
+        private_dns_enabled = true
+        tags                = { Name = "${local.name}-${service}" }
+      }
+    }
+  )
 
   tags = local.tags
 }
