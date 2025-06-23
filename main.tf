@@ -7,8 +7,8 @@ data "aws_partition" "current" {}
 resource "aws_batch_compute_environment" "this" {
   for_each = { for k, v in var.compute_environments : k => v if var.create }
 
-  compute_environment_name        = lookup(each.value, "name", null)
-  compute_environment_name_prefix = try(each.value.name_prefix, null) != null ? "${each.value.name_prefix}-" : null
+  name        = lookup(each.value, "name", null)
+  name_prefix = try(each.value.name_prefix, null) != null ? "${each.value.name_prefix}-" : null
 
   service_role = var.create_service_iam_role ? aws_iam_role.service[0].arn : each.value.service_role
   type         = lookup(each.value, "type", "MANAGED")
@@ -237,8 +237,24 @@ resource "aws_batch_job_queue" "this" {
   state                 = each.value.state
   priority              = each.value.priority
   scheduling_policy_arn = try(each.value.create_scheduling_policy, true) ? aws_batch_scheduling_policy.this[each.key].arn : try(each.value.scheduling_policy_arn, null)
-  compute_environments  = slice([for env in try(each.value.compute_environments, keys(var.compute_environments)) : aws_batch_compute_environment.this[env].arn], 0, min(length(try(each.value.compute_environments, keys(var.compute_environments))), 3))
+  
+  dynamic "compute_environment_order" {
+      for_each = [
+        for idx, env in slice(
+          try(each.value.compute_environments, keys(var.compute_environments)),
+          0,
+          min(length(try(each.value.compute_environments, keys(var.compute_environments))), 3)
+        ) : {
+          order = idx + 1
+          arn   = aws_batch_compute_environment.this[env].arn
+        }
+      ]
 
+      content {
+        order               = compute_environment_order.value.order
+        compute_environment = compute_environment_order.value.arn
+      }
+    }
   tags = merge(var.tags, lookup(each.value, "tags", {}))
 }
 
