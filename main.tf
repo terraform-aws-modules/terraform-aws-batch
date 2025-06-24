@@ -14,8 +14,10 @@ locals {
 resource "aws_batch_compute_environment" "this" {
   for_each = var.create && var.compute_environments != null ? var.compute_environments : {}
 
+  region = var.region
+
   name        = each.value.name
-  name_prefix = each.value.name_prefix
+  name_prefix = each.value.name_prefix != null ? "${each.value.name_prefix}-" : null
 
   dynamic "compute_resources" {
     for_each = each.value.compute_resources != null ? [each.value.compute_resources] : []
@@ -35,7 +37,7 @@ resource "aws_batch_compute_environment" "this" {
       }
 
       ec2_key_pair  = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.ec2_key_pair
-      instance_role = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : try(coalesce(compute_resources.value.instance_role, aws_iam_instance_profile.instance[0].arn), null)
+      instance_role = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : try(aws_iam_instance_profile.instance[0].arn, compute_resources.value.instance_role)
       instance_type = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.instance_types
 
       dynamic "launch_template" {
@@ -52,10 +54,11 @@ resource "aws_batch_compute_environment" "this" {
       min_vcpus           = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.min_vcpus
       placement_group     = compute_resources.value.placement_group
       security_group_ids  = compute_resources.value.security_group_ids
-      spot_iam_fleet_role = compute_resources.value.type == "SPOT" ? try(coalesce(compute_resources.value.spot_fleet_role, aws_iam_role.spot_fleet[0].arn), null) : null
+      spot_iam_fleet_role = compute_resources.value.type == "SPOT" ? try(aws_iam_role.spot_fleet[0].arn, compute_resources.value.spot_fleet_role) : null
       subnets             = compute_resources.value.subnets
-      tags                = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : merge(var.tags, compute_resources.value.tags)
-      type                = compute_resources.value.type
+      # We do not merge with default `var.tags` here because tag changes cause compute environment replacement
+      tags = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.tags
+      type = compute_resources.value.type
     }
   }
 
@@ -295,6 +298,8 @@ locals {
 resource "aws_batch_job_queue" "this" {
   for_each = local.create_job_queues && var.job_queues != null ? var.job_queues : {}
 
+  region = var.region
+
   dynamic "compute_environment_order" {
     for_each = each.value.compute_environment_order != null ? each.value.compute_environment_order : {}
 
@@ -348,6 +353,8 @@ resource "aws_batch_job_queue" "this" {
 resource "aws_batch_scheduling_policy" "this" {
   for_each = local.create_job_queues && var.job_queues != null ? { for k, v in var.job_queues : k => v if v.create_scheduling_policy } : {}
 
+  region = var.region
+
   dynamic "fair_share_policy" {
     for_each = each.value.fair_share_policy != null ? [each.value.fair_share_policy] : []
 
@@ -380,6 +387,8 @@ resource "aws_batch_scheduling_policy" "this" {
 
 resource "aws_batch_job_definition" "this" {
   for_each = var.create && var.job_definitions != null ? var.job_definitions : {}
+
+  region = var.region
 
   container_properties       = each.value.container_properties
   deregister_on_new_revision = each.value.deregister_on_new_revision
