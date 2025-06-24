@@ -62,8 +62,8 @@ variable "instance_iam_role_permissions_boundary" {
 
 variable "instance_iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "instance_iam_role_tags" {
@@ -114,8 +114,8 @@ variable "service_iam_role_permissions_boundary" {
 
 variable "service_iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "service_iam_role_tags" {
@@ -166,8 +166,8 @@ variable "spot_fleet_iam_role_permissions_boundary" {
 
 variable "spot_fleet_iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "spot_fleet_iam_role_tags" {
