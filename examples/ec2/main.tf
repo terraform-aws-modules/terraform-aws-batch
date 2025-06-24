@@ -121,7 +121,14 @@ module "batch" {
       state    = "ENABLED"
       priority = 1
 
-      compute_environments = ["b_ec2_spot"]
+      compute_environment_order = {
+        0 = {
+          compute_environment_key = "b_ec2_spot"
+        }
+        1 = {
+          compute_environment_key = "a_ec2"
+        }
+      }
 
       tags = {
         JobQueue = "Low priority job queue"
@@ -132,6 +139,12 @@ module "batch" {
       name     = "HighPriorityEc2"
       state    = "ENABLED"
       priority = 99
+
+      compute_environment_order = {
+        0 = {
+          compute_environment_key = "a_ec2"
+        }
+      }
 
       fair_share_policy = {
         compute_reservation = 1
@@ -204,7 +217,7 @@ module "batch" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -221,7 +234,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   vpc_id = module.vpc.vpc_id
 

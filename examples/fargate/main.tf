@@ -90,6 +90,15 @@ module "batch" {
       state    = "ENABLED"
       priority = 1
 
+      compute_environment_order = {
+        0 = {
+          compute_environment_key = "b_fargate_spot"
+        }
+        1 = {
+          compute_environment_key = "a_fargate"
+        }
+      }
+
       tags = {
         JobQueue = "Low priority job queue"
       }
@@ -99,6 +108,12 @@ module "batch" {
       name     = "HighPriorityFargate"
       state    = "ENABLED"
       priority = 99
+
+      compute_environment_order = {
+        0 = {
+          compute_environment_key = "a_fargate"
+        }
+      }
 
       fair_share_policy = {
         compute_reservation = 1
@@ -176,7 +191,7 @@ module "batch" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -193,7 +208,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   vpc_id = module.vpc.vpc_id
 

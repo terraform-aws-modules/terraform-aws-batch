@@ -13,32 +13,32 @@ output "compute_environments" {
 
 output "instance_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.instance[0].name, "")
+  value       = try(aws_iam_role.instance[0].name, null)
 }
 
 output "instance_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.instance[0].arn, "")
+  value       = try(aws_iam_role.instance[0].arn, null)
 }
 
 output "instance_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.instance[0].unique_id, "")
+  value       = try(aws_iam_role.instance[0].unique_id, null)
 }
 
 output "instance_iam_instance_profile_arn" {
   description = "ARN assigned by AWS to the instance profile"
-  value       = try(aws_iam_instance_profile.instance[0].arn, "")
+  value       = try(aws_iam_instance_profile.instance[0].arn, null)
 }
 
 output "instance_iam_instance_profile_id" {
   description = "Instance profile's ID"
-  value       = try(aws_iam_instance_profile.instance[0].id, "")
+  value       = try(aws_iam_instance_profile.instance[0].id, null)
 }
 
 output "instance_iam_instance_profile_unique" {
   description = "Stable and unique string identifying the IAM instance profile"
-  value       = try(aws_iam_instance_profile.instance[0].unique_id, "")
+  value       = try(aws_iam_instance_profile.instance[0].unique_id, null)
 }
 
 ################################################################################
@@ -47,17 +47,17 @@ output "instance_iam_instance_profile_unique" {
 
 output "service_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.service[0].name, "")
+  value       = try(aws_iam_role.service[0].name, null)
 }
 
 output "service_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.service[0].arn, "")
+  value       = try(aws_iam_role.service[0].arn, null)
 }
 
 output "service_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.service[0].unique_id, "")
+  value       = try(aws_iam_role.service[0].unique_id, null)
 }
 
 ################################################################################
@@ -66,17 +66,17 @@ output "service_iam_role_unique_id" {
 
 output "spot_fleet_iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].name, "")
+  value       = try(aws_iam_role.spot_fleet[0].name, null)
 }
 
 output "spot_fleet_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].arn, "")
+  value       = try(aws_iam_role.spot_fleet[0].arn, null)
 }
 
 output "spot_fleet_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.spot_fleet[0].unique_id, "")
+  value       = try(aws_iam_role.spot_fleet[0].unique_id, null)
 }
 
 ################################################################################
