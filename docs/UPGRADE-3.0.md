@@ -9,7 +9,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
 
 ## List of backwards incompatible changes
 
-- Terraform v1.10.0 is now minimum supported version
+- Terraform v1.5.7 is now minimum supported version
 - AWS provider v6.0.0 is now minimum supported version
 - `instance_iam_role_additional_policies`, `service_iam_role_additional_policies`, `spot_fleet_iam_role_additional_policies` types are now `map(string)` instead of `list(string)`
 - IAM assume role policy SIDs have been modified to match their use (previously all were `ECSAssumeRole` which is inaccurate)
