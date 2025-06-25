@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.1.0...v3.0.0) (2025-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade AWS provider and min required Terraform version to `6.0` and `1.5.7` respectively (#38)
+
+### Features
+
+* Upgrade AWS provider and min required Terraform version to `6.0` and `1.5.7` respectively ([#38](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/38)) ([7781147](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/778114769cb5b1b8096ccb701fc2db3ffee83362))
+
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#36](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/36)) ([c478369](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/c478369fdc5a73bbe334b6159fbce7e9a0937198))
+
 ## [2.1.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.0.3...v2.1.0) (2024-08-19)
 
 
