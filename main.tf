@@ -44,8 +44,8 @@ resource "aws_batch_compute_environment" "this" {
         for_each = !contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) && compute_resources.value.launch_template != null ? [compute_resources.value.launch_template] : []
 
         content {
-          launch_template_id   = launch_template.value.id
-          launch_template_name = launch_template.value.name
+          launch_template_id   = launch_template.value.launch_template_id
+          launch_template_name = launch_template.value.launch_template_name
           version              = launch_template.value.version
         }
       }
