@@ -44,8 +44,8 @@ resource "aws_batch_compute_environment" "this" {
         for_each = !contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) && compute_resources.value.launch_template != null ? [compute_resources.value.launch_template] : []
 
         content {
-          launch_template_id   = launch_template.value.id
-          launch_template_name = launch_template.value.name
+          launch_template_id   = launch_template.value.launch_template_id
+          launch_template_name = launch_template.value.launch_template_name
           version              = launch_template.value.version
         }
       }
@@ -452,11 +452,11 @@ resource "aws_batch_job_definition" "this" {
           }
         }
 
-        dns_policy   = eks_properties.value.pod_properties.dns_policy
-        host_network = eks_properties.value.pod_properties.host_network
+        dns_policy   = eks_properties.value.dns_policy
+        host_network = eks_properties.value.host_network
 
         dynamic "image_pull_secret" {
-          for_each = eks_properties.value.pod_properties.image_pull_secrets != null ? eks_properties.value.pod_properties.image_pull_secrets : []
+          for_each = eks_properties.value.image_pull_secrets != null ? eks_properties.value.image_pull_secrets : []
 
           content {
             name = image_pull_secret.value.name
@@ -464,7 +464,7 @@ resource "aws_batch_job_definition" "this" {
         }
 
         dynamic "init_containers" {
-          for_each = eks_properties.value.pod_properties.init_containers != null ? eks_properties.value.pod_properties.init_containers : {}
+          for_each = eks_properties.value.init_containers != null ? eks_properties.value.init_containers : {}
 
           content {
             args    = init_containers.value.args
@@ -517,18 +517,18 @@ resource "aws_batch_job_definition" "this" {
         }
 
         dynamic "metadata" {
-          for_each = eks_properties.value.pod_properties.metadata != null ? [eks_properties.value.pod_properties.metadata] : []
+          for_each = eks_properties.value.metadata != null ? [eks_properties.value.metadata] : []
 
           content {
             labels = metadata.value.labels
           }
         }
 
-        service_account_name    = eks_properties.value.pod_properties.service_account_name
-        share_process_namespace = eks_properties.value.pod_properties.share_process_namespace
+        service_account_name    = eks_properties.value.service_account_name
+        share_process_namespace = eks_properties.value.share_process_namespace
 
         dynamic "volumes" {
-          for_each = eks_properties.value.pod_properties.volumes != null ? eks_properties.value.pod_properties.volumes : {}
+          for_each = eks_properties.value.volumes != null ? eks_properties.value.volumes : {}
 
           content {
             dynamic "empty_dir" {

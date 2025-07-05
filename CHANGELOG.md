@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.1...v3.0.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* Remove erroneous `pod_properties` scoping from job definition variable attribute structure ([#45](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/45)) ([7c8becf](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/7c8becf486af35d9b14aa71299bc3c8f3b4fbe85))
+
+## [3.0.1](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.0...v3.0.1) (2025-06-27)
+
+
+### Bug Fixes
+
+* Correct launch template attribute values to match variable/API definition ([#43](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/43)) ([3a07ad9](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/3a07ad9f7cbe90011c36ba75c209a81ee1d8b1c4))
+
 ## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v2.1.0...v3.0.0) (2025-06-25)
 
 
