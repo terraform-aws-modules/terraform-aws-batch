@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.3](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.2...v3.0.3) (2025-07-05)
+
+
+### Bug Fixes
+
+* Ensure a list of attributes can be used on `ec2_configuration` ([#47](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/47)) ([67d405f](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/67d405f14892f314512ff09119513e9bcf81da91))
+
 ## [3.0.2](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.1...v3.0.2) (2025-07-01)
 
 
