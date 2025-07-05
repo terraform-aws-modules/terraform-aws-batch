@@ -28,7 +28,7 @@ resource "aws_batch_compute_environment" "this" {
       desired_vcpus       = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.desired_vcpus
 
       dynamic "ec2_configuration" {
-        for_each = !contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) && compute_resources.value.ec2_configuration != null ? [compute_resources.value.ec2_configuration] : []
+        for_each = !contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) && compute_resources.value.ec2_configuration != null ? compute_resources.value.ec2_configuration : []
 
         content {
           image_id_override = ec2_configuration.value.image_id_override
