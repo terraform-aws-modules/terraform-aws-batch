@@ -54,7 +54,7 @@ resource "aws_batch_compute_environment" "this" {
       min_vcpus           = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.min_vcpus
       placement_group     = compute_resources.value.placement_group
       security_group_ids  = compute_resources.value.security_group_ids
-      spot_iam_fleet_role = compute_resources.value.type == "SPOT" ? try(aws_iam_role.spot_fleet[0].arn, compute_resources.value.spot_fleet_role) : null
+      spot_iam_fleet_role = compute_resources.value.type == "SPOT" ? try(aws_iam_role.spot_fleet[0].arn, compute_resources.value.spot_iam_fleet_role) : null
       subnets             = compute_resources.value.subnets
       # We do not merge with default `var.tags` here because tag changes cause compute environment replacement
       tags = contains(["FARGATE", "FARGATE_SPOT"], compute_resources.value.type) ? null : compute_resources.value.tags
