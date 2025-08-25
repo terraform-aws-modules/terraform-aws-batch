@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.4](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.3...v3.0.4) (2025-08-25)
+
+
+### Bug Fixes
+
+* Correct attribute name for external spot IAM role ([#49](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/49)) ([44828cb](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/44828cbe2e18e57b2be54ddb6be98e886d97a4b9))
+
 ## [3.0.3](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.2...v3.0.3) (2025-07-05)
 
 
