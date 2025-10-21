@@ -1,4 +1,8 @@
-# Terraform AWS Batch Examples
+# Examples
 
-- [EC2](https://github.com/terraform-aws-modules/terraform-aws-batch/tree/master/examples/ec2)
-- [Fargate](https://github.com/terraform-aws-modules/terraform-aws-batch/tree/master/examples/fargate)
+Please note - the examples provided serve two primary means:
+
+1. Show users working examples of the various ways in which the module can be configured and features supported
+2. A means of testing/validating module changes
+
+Please do not mistake the examples provided as "best practices". It is up to users to consult the AWS service documentation for best practices, usage recommendations, etc.
