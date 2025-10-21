@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.5](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.4...v3.0.5) (2025-10-21)
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#50](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/50)) ([71b03c6](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/71b03c6a0d023cfb8b0d2ebdc5ca59b34ae3d6fc))
+
 ## [3.0.4](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.3...v3.0.4) (2025-08-25)
 
 
