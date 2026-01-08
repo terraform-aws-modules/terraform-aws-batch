@@ -75,7 +75,6 @@ resource "aws_batch_compute_environment" "this" {
   state        = each.value.state
 
   tags = merge(
-    { terraform-aws-modules = "batch" },
     var.tags,
     each.value.tags,
   )
