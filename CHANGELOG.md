@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.5...v3.1.0) (2026-01-08)
+
+### Features
+
+* Add provider meta user-agent, replacing static tag ([#51](https://github.com/terraform-aws-modules/terraform-aws-batch/issues/51)) ([9368b72](https://github.com/terraform-aws-modules/terraform-aws-batch/commit/9368b7295134146582b5472f9fb350c9d048f811))
+
 ## [3.0.5](https://github.com/terraform-aws-modules/terraform-aws-batch/compare/v3.0.4...v3.0.5) (2025-10-21)
 
 ### Bug Fixes
